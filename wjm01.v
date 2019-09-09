@@ -1,3 +1,4 @@
+(*
 Inductive day : Type :=
   | monday
   | tuesday
@@ -113,6 +114,7 @@ Definition all_zero(arg:halfbyte):bool:=
 
 Example test_all_zero:all_zero (bits B0 B0 B0 B0)=true.
 Proof. simpl. reflexivity. Qed.
+*)
 
 Module NatPlayground.
 
@@ -186,7 +188,29 @@ Fixpoint factorial (n : nat):nat:=
 
 Compute (factorial 5).
 
+Fixpoint less (n m : nat):bool:=
+    match n,m with
+        |O,O => false
+        |O,S m' => true
+        |S n',O => false
+        |S n',S m' => (less n' m')
+    end.
+Compute (less 15 12).
+Notation "x < y" := (less x y).
+Compute (12<13).
 
-
-
+Definition less2 (n m : nat):bool:=
+    match n,m with
+        |O,O => false
+        |O,S m' => true
+        |S n',O => false
+        |_,_ => match n-m with
+                    |O => match m-n with
+                              |O => false
+                              |_ => true
+                          end
+                    |_ => false
+                end
+    end.
+Compute (less2 28 27).
 
