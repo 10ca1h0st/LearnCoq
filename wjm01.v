@@ -149,3 +149,10 @@ destruct b eqn:Eb.
     { simpl. reflexivity. }
     { rewrite <- H. simpl. reflexivity. }
 Qed.
+
+Theorem zero_nbeq_plus_1:forall n:nat,(0=?(n+1))=false.
+Proof. intros n.
+destruct n eqn:E.
+-simpl. reflexivity.
+-simpl. reflexivity.
+Qed.
