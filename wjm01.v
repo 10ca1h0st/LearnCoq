@@ -1,120 +1,3 @@
-(*
-Inductive day : Type :=
-  | monday
-  | tuesday
-  | wednesday
-  | thursday
-  | friday
-  | saturday
-  | sunday.
-
-Definition next_weekday (d:day) : day :=
-  match d with
-  | monday    => tuesday
-  | tuesday   => wednesday
-  | wednesday => thursday
-  | thursday  => friday
-  | friday    => monday
-  | saturday  => monday
-  | sunday    => monday
-  end.
-
-Compute (next_weekday friday).
-
-Example test_next_weekday:(next_weekday (next_weekday monday)) = wednesday.
-
-Proof. simpl. reflexivity. Qed.
-
-Inductive bool : Type :=
-    |true
-    |false.
-
-Definition andb (arg1:bool)(arg2:bool):bool:=
-    match arg1 with
-    |true=>arg2
-    |false=>false
-    end.
-
-Compute (andb true false).
-
-Example test_andb:(andb true false)=false.
-
-Proof.
-simpl.
-reflexivity.
-Qed.
-
-Notation "x && y":=(andb x y). Example test_notation:true&&false=false.
-Proof. simpl. reflexivity. Qed.
-
-Print test_notation.
-
-Definition rb (arg1:bool):bool:=
-    match arg1 with
-    |true=>false
-    |false=>true
-    end.
-
-
-Definition nandb (arg1:bool) (arg2:bool):bool:=
-    match arg1 with
-    |false=>true
-    |true=>rb arg2
-    end.
-
-Example test_nandb1: (nandb true false) = true.
-Proof. simpl. reflexivity. Qed.
-Example test_nandb2: (nandb false false) = true.
-Proof. simpl. reflexivity. Qed.
-Example test_nandb3: (nandb false true) = true.
-Proof. simpl. reflexivity. Qed.
-Example test_nandb4: (nandb true true) = false.
-Proof. simpl. reflexivity. Qed.
-
-Check nandb.
-Check true.
-Check rb.
-Check andb.
-
-Inductive rgb : Type :=
-  | red
-  | green
-  | blue.
-Inductive color : Type :=
-  | black
-  | white
-  | primary (p : rgb).
-
-Definition monochrome (c : color) : bool :=
-  match c with
-  | black=>true
-  | white=>true
-  | primary q=>false
-  end.
-Example test1:(monochrome (primary red))=false.
-Proof. simpl. reflexivity. Qed.
-
-Example test2:primary red=primary red.
-Proof. simpl. reflexivity. Qed.
-Check (primary red).
-
-Inductive bit:Type:=
-    |B0
-    |B1.
-
-Inductive halfbyte:Type:=
-    |bits(b3 b2 b1 b0:bit).
-
-Definition all_zero(arg:halfbyte):bool:=
-    match arg with
-    |(bits B0 B0 B0 B0)=>true
-    |(bits _ _ _ _)=>false
-    (*|(bits B0 B0 B0 B0)=>true*)
-    end.
-
-Example test_all_zero:all_zero (bits B0 B0 B0 B0)=true.
-Proof. simpl. reflexivity. Qed.
-*)
 
 Module NatPlayground.
 
@@ -122,15 +5,7 @@ Inductive nat:Type:=
     |O
     |S (n:nat).
 
-(*Definition pred(n:nat):nat:=
-    match n with
-    |O => O
-    |S n_pre=>n_pre
-    end.*)
-
-
 End NatPlayground.
-Check (S (S (S O))).
 
 Fixpoint oddn(n:nat):bool:=
     match n with
@@ -139,8 +14,6 @@ Fixpoint oddn(n:nat):bool:=
     |S (S m)=>oddn m
     end.
 
-Compute (oddn 988).
-
 
 Fixpoint plus (n m : nat):nat:=
     match n with
@@ -148,7 +21,6 @@ Fixpoint plus (n m : nat):nat:=
         |S n' => S (plus n' m)
     end.
 
-Compute (plus (S O) (S (S O))).
 Notation "x + y" := (plus x y).
 
 Fixpoint minus (n m : nat):nat:=
@@ -166,7 +38,6 @@ Fixpoint mult (n m : nat):nat:=
         |S n' => (mult n' m)+m
     end.
 
-Compute (mult 3 15).
 Notation "x * y" := (mult x y).
 
 Fixpoint exp (base power : nat):nat:=
@@ -176,17 +47,25 @@ Fixpoint exp (base power : nat):nat:=
         |S power' => mult base (exp base power')
     end.
 
-Compute (exp 3 4).
-Notation "x ^ y" := (exp x y).
-Compute (4^2).
-
 Fixpoint factorial (n : nat):nat:=
     match n with
         |O => 1
         |S n' => mult n (factorial(n'))
     end.
 
-Compute (factorial 5).
+Fixpoint eqb (n m : nat) : bool :=
+  match n with
+  | O => match m with
+         | O => true
+         | S m' => false
+         end
+  | S n' => match m with
+            | O => false
+            | S m' => eqb n' m'
+            end
+  end.
+
+Notation "x =? y" := (eqb x y) (at level 70) : nat_scope.
 
 Fixpoint less (n m : nat):bool:=
     match n,m with
@@ -195,9 +74,8 @@ Fixpoint less (n m : nat):bool:=
         |S n',O => false
         |S n',S m' => (less n' m')
     end.
-Compute (less 15 12).
-Notation "x < y" := (less x y).
-Compute (12<13).
+
+Notation "x <? y" := (less x y) (at level 70) : nat_scope.
 
 Definition less2 (n m : nat):bool:=
     match n,m with
@@ -214,3 +92,60 @@ Definition less2 (n m : nat):bool:=
     end.
 Compute (less2 28 27).
 
+Example test_example:1+2=3.
+Proof. Admitted.
+
+Theorem plus_0_n:forall n:nat,0+n=n.
+Proof. intros n. simpl. reflexivity. Qed.
+
+Example plus_reverse:forall n m:nat,m=n->n+m=m+n.
+Proof. 
+intros n m. intros G. rewrite <- G.
+simpl. reflexivity. Qed.
+
+Theorem plus_id_exercise:forall n m o:nat,
+    n=m -> m=o -> n+m=m+o.
+Proof.
+intros n m o. intros H I. rewrite -> H. rewrite <- I.
+simpl. reflexivity. Qed.
+
+Theorem t1:forall n m:nat,(0+n)*m = n*m.
+Proof.
+intros n m. rewrite -> plus_0_n.
+simpl. reflexivity. Qed.
+
+
+Theorem pre:forall n:nat,S n = 1+n.
+Proof. simpl. reflexivity. Qed.
+
+
+Theorem mult_S_l:forall n m:nat,m=S n->m*(1+n)=m*m.
+Proof.
+intros n m. intros H. rewrite <- pre. rewrite <- H.
+simpl. reflexivity. Qed.
+
+
+Theorem plus_one_high_zero:forall n m:nat,0<?n+m+1=true.
+Proof. intros n m. destruct n as [|n'] eqn:En.
+-destruct m as [|n''] eqn:Em.
+    +simpl. reflexivity.
+    +simpl. reflexivity.
+-destruct m as [|n''] eqn:Em.
+    +simpl. reflexivity.
+    +simpl. reflexivity.
+Qed.
+
+Definition andb (b1:bool) (b2:bool) : bool :=
+  match b1 with
+  | true => b2
+  | false => false
+  end.
+
+Theorem andb_true_elim2:forall b c:bool,andb b c=true->c=true.
+Proof. intros b c H.
+destruct b eqn:Eb.
+-rewrite <- H. simpl. reflexivity.
+-destruct c eqn:Ec.
+    { simpl. reflexivity. }
+    { rewrite <- H. simpl. reflexivity. }
+Qed.
