@@ -34,7 +34,6 @@ Notation "x - y" := (minus x y).
 Fixpoint mult (n m : nat):nat:=
     match n with
         |O => O
-        |S O => m
         |S n' => (mult n' m)+m
     end.
 
