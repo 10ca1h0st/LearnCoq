@@ -156,3 +156,61 @@ destruct n eqn:E.
 -simpl. reflexivity.
 -simpl. reflexivity.
 Qed.
+
+
+Theorem identity_fn_applied_twice:
+forall (f:bool->bool),
+(forall (x:bool),f x=x)->forall (b:bool),f(f b)=b.
+Proof.
+intros f H b.
+rewrite -> H.
+rewrite -> H.
+simpl. reflexivity.
+Qed.
+
+Definition negb (b:bool) : bool :=
+  match b with
+  | true => false
+  | false => true
+  end.
+
+
+Theorem negation_fn_applied_twice:
+forall (f:bool->bool),
+(forall (x:bool),f x=negb x)->forall (b:bool),f(f b)=b.
+Proof.
+intros f H b.
+destruct b eqn:Eb.
+-rewrite -> H. rewrite -> H. simpl. reflexivity.
+-rewrite -> H. rewrite -> H. simpl. reflexivity.
+Qed.
+
+Definition orb (b1:bool) (b2:bool) : bool :=
+  match b1 with
+  | true => true
+  | false => b2
+  end.
+
+Theorem andb_true_c_eq_c:forall c:bool,andb true c=c.
+Proof. simpl. reflexivity. Qed.
+
+Theorem orb_true_c_eq_true:forall c:bool,orb true c=true.
+Proof. simpl. reflexivity. Qed.
+
+Theorem andb_false_c_eq_false:forall c:bool,andb false c=false.
+Proof. simpl. reflexivity. Qed.
+
+Theorem orb_false_c_eq_c:forall c:bool,orb false c=c.
+Proof. simpl. reflexivity. Qed.
+
+
+Theorem andb_eq_orb:
+forall (b c:bool),andb b c=orb b c->b=c.
+Proof.
+intros b c.
+destruct b eqn:Eb.
+-rewrite -> andb_true_c_eq_c. rewrite->orb_true_c_eq_true.
+intros H. rewrite->H. simpl. reflexivity.
+-rewrite->andb_false_c_eq_false. rewrite->orb_false_c_eq_c.
+intros H. rewrite->H. simpl. reflexivity.
+Qed.
