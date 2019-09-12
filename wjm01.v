@@ -14,6 +14,13 @@ Fixpoint oddn(n:nat):bool:=
     |S (S m)=>oddn m
     end.
 
+Fixpoint evenb (n:nat) : bool :=
+  match n with
+  | O        => true
+  | S O      => false
+  | S (S n') => evenb n'
+  end.
+
 
 Fixpoint plus (n m : nat):nat:=
     match n with
