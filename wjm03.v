@@ -160,9 +160,44 @@ Fixpoint countoddmembers (l:natlist):nat:=
 
 Compute (countoddmembers [0;2;4]).
 
+Theorem app_assoc:forall (l1 l2 l3:natlist),(l1++l2)++l3=l1++(l2++l3).
+Proof.
+intros l1 l2 l3.
+induction l1 as [|n l' IHl'].
+    -reflexivity.
+    -simpl. rewrite->IHl'. simpl. reflexivity.
+Qed.
 
+Inductive natoption : Type :=
+  | Some (n : nat)
+  | None.
 
+Inductive id:Type:=
+    |Id (n:nat).
 
+Definition eqb_id (x1 x2 : id) :=
+  match x1, x2 with
+  | Id n1, Id n2 => n1 =? n2
+  end.
+
+Module PartialMap.
+
+Inductive partial_map:Type:=
+    |empty
+    |record (i:id) (v:nat) (m:partial_map).
+
+Definition update (d:partial_map) (x:id) (value:nat):partial_map:=
+    record x value d.
+
+Fixpoint find (x:id) (d:partial_map):natoption:=
+    match d with
+        |empty=>None
+        |record y v d'=>if eqb_id x y
+                        then Some v
+                        else find x d'
+    end.
+
+End PartialMap.
 
 
 
